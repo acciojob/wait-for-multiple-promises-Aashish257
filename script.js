@@ -1,56 +1,45 @@
 //your JS code here. If required.
 const output = document.getElementById("output");
 
-/* 1️⃣ Show default Loading row */
+/* Show Loading row (TEST EXPECTS THIS ID) */
 output.innerHTML = `
-  <tr>
+  <tr id="loading">
     <td colspan="2">Loading...</td>
   </tr>
 `;
 
-/* 2️⃣ Function to create a promise with random delay (1–3 seconds) */
 function createPromise() {
-  const time = Math.random() * 2 + 1; // 1 to 3 seconds
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(time);
-    }, time * 1000);
+  const time = Math.random() * 2 + 1;
+  return new Promise(resolve => {
+    setTimeout(() => resolve(time), time * 1000);
   });
 }
 
-/* 3️⃣ Create three promises */
-const promise1 = createPromise();
-const promise2 = createPromise();
-const promise3 = createPromise();
-
-/* Start total time measurement */
 const startTime = performance.now();
 
-/* 4️⃣ Wait for all promises */
-Promise.all([promise1, promise2, promise3]).then((times) => {
-  const endTime = performance.now();
-  const totalTime = (endTime - startTime) / 1000;
+Promise.all([
+  createPromise(),
+  createPromise(),
+  createPromise()
+]).then(times => {
 
-  /* Remove Loading row */
-  output.innerHTML = "";
+  const loadingRow = document.getElementById("loading");
+  if (loadingRow) loadingRow.remove();
 
-  /* Populate promise rows */
   times.forEach((time, index) => {
     const row = document.createElement("tr");
-
     row.innerHTML = `
       <td>Promise ${index + 1}</td>
       <td>${time.toFixed(3)}</td>
     `;
-
     output.appendChild(row);
   });
 
+  const totalTime = (performance.now() - startTime) / 1000;
   const totalRow = document.createElement("tr");
   totalRow.innerHTML = `
     <td><strong>Total</strong></td>
     <td><strong>${totalTime.toFixed(3)}</strong></td>
   `;
-
   output.appendChild(totalRow);
 });
